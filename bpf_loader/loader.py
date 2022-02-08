@@ -12,9 +12,7 @@ def follow(thefile):
             continue
         yield line
 
-byte_pos = 0
-logfile = open("buf_test/buffer","r")
-loglines = follow(logfile)
-for line in loglines:
+buf = open("buf_test/buffer","r")
+arglines = follow(buf)
+for line in arglines:
     args = line.split(',')
-    
