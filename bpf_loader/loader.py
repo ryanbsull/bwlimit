@@ -1,4 +1,4 @@
-from bcc import BPF
+#from bcc import BPF
 import ctypes as ct
 from struct import pack
 import time
@@ -16,4 +16,5 @@ byte_pos = 0
 logfile = open("buf_test/buffer","r")
 loglines = follow(logfile)
 for line in loglines:
-    print(line)
+    args = line.split(',')
+    

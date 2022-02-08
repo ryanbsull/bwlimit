@@ -1,0 +1,8 @@
+hello
+hello world
+hello world
+hello world
+0, 100,1,test.log,LIMIT_READ
+0, 100,1,test.log,LIMIT_READ
+0, 100,1,/example/test.log,LIMIT_READ
+0,100,1,/example/test.log,LIMIT_READ
