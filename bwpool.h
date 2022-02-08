@@ -7,8 +7,8 @@
 #define     BUFFER      "buf_test/buffer"
 
 int bwpool_create(
-    int flags, unsigned long bytes, unsigned int interval_sec,
-    int limit_op
+    int flags, unsigned long bytes, unsigned int interval_sec, 
+    char* lim_file, int limit_op
 );
 
 #endif
