@@ -5,6 +5,7 @@
 #define     LIMIT_WRITE 1
 #define     LIMIT_ALL   3
 #define     BUFFER      "buf_test/buffer"
+#define     MAX_POOLS   128
 
 int bwpool_create(
     int flags, unsigned long bytes, unsigned int interval_sec, 

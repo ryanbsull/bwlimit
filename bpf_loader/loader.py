@@ -12,6 +12,10 @@ def follow(thefile):
             continue
         yield line
 
+file_monitors = BPF(src_file='default_bpf_progs/file_monitor.c')
+file_monitors.attach_kprobe(event='vfs_write', fn_name='write_monitor')
+file_monitors.attach_kprobe(event='vfs_read', fn_name='read_monitor')
+
 buf = open("buf_test/buffer","r")
 arglines = follow(buf)
 for line in arglines:
