@@ -2,49 +2,33 @@
 #include <linux/fs_struct.h>
 #include <linux/dcache.h>
 #include <linux/fs.h>
+#include <unistd.h>
 
-struct data_t {
-    char name[DNAME_INLINE_LEN];
-    u32 bytes;
-    char op;
-};
+#define BWLIM_GLOBAL (5 * 1024 * 1024)
+#define REFRESH_TIME_NS	100000000
+#define NS_PER_SEC	1000000000
 
 BPF_PERF_OUTPUT(data);
+BPF_ARRAY(limit, u64, 1);
+BPF_ARRAY(time, u64, 1);
 
-int write_monitor(struct pt_regs *ctx, struct file *file, size_t count){
-    struct data_t bpf_data = {};
-    bpf_data.op = 'w';
-    bpf_data.bytes = count;
-    if(!(PT_REGS_RC(ctx)))
-        return 0;
-    
-    struct dentry *de = file->f_path.dentry;
-	int mode = file->f_inode->i_mode;
-	struct qstr d_name = de->d_name;
-	if (d_name.len == 0 || !S_ISREG(mode)){
-		return 0;
+int wr_lim(size_t bytes){
+	u64 key = 0, *prev_ts, *lim, ts;
+	
+	lim = limit.lookup(&key);
+	*lim += bytes;
+
+	prev_ts = time.lookup(&key);
+
+	if(*lim > BWLIM_GLOBAL){
+		*lim = 0;
+		usleep(1000);
 	}
-    bpf_probe_read_kernel(&bpf_data.filename, sizeof(bpf_data.filename), d_name.name);
-    data.perf_sumbit();
-
-    return 1;
-}
-
-int read_monitor(struct pt_regs *ctx, struct file *file, size_t count){
-    struct data_t bpf_data = {};
-    bpf_data.op = 'r';
-    bpf_data.bytes = count;
-    if(!(PT_REGS_RC(ctx)))
-        return 0;
-    
-    struct dentry *de = file->f_path.dentry;
-	int mode = file->f_inode->i_mode;
-	struct qstr d_name = de->d_name;
-	if (d_name.len == 0 || !S_ISREG(mode)){
-		return 0;
+	ts = bpf_ktime_get_ns();
+	*prev_ts = *prev_ts + (ts - *prev_ts);
+	if(*prev_ts > REFRESH_TIME_NS){
+		*prev_ts = 0;
+		*lim = 0;
 	}
-    bpf_probe_read_kernel(&bpf_data.filename, sizeof(bpf_data.filename), d_name.name);
-    data.perf_sumbit();
-
-    return 1;
+	return 0;
 }
