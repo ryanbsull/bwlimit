@@ -2,7 +2,6 @@
 #include <linux/fs_struct.h>
 #include <linux/dcache.h>
 #include <linux/fs.h>
-#include <unistd.h>
 
 #define BWLIM_GLOBAL (5 * 1024 * 1024)
 #define REFRESH_TIME_NS	100000000
@@ -27,7 +26,7 @@ int wr_lim(size_t bytes){
 
 	if(*lim > BWLIM_GLOBAL){
 		*lim = 0;
-		usleep(1000);
+		delay(1000);
 	}
     dt = tp.lookip(&key);
     if(!dt)
