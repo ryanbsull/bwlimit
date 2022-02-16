@@ -5,8 +5,10 @@
 int main(){
     //int bwpool_fd = bwpool_create(0, 100,1,"test.log",LIMIT_READ);
 	FILE *fp;
+	int i = 0;
 	fp = fopen("buf_test/test.buf", "w+");
-	fprintf(fp, "This is a test\n");
-	fputs("This is another test\n", fp);
+	for(; i < 100; i++){
+		fputs("This is a test\n", fp);
+	}
 	fclose(fp);
 }
