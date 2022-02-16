@@ -8,4 +8,4 @@ test: test.c
 	touch buf_test/test.buf
 
 clean: test
-	rm $? buf_test/test.buf
+	rm -rf $? buf_test/test.buf
